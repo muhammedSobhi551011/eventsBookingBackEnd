@@ -1,0 +1,65 @@
+* Routers
+    1. usersRouter
+        1. Registe user
+            Usage: Registe a user
+            URL: /Registe
+            Method: POST
+            fields: firstName, lastName, username, email, password, avatar
+            Access: PUBLIC
+        
+        2. Login
+            Usage: login
+            URL: /login
+            Method: POST
+            fields: username, password
+            Access: PUBLIC
+
+        3. Edit user info
+            Usage: edit user info
+            URL: /users/:userId
+            Method: PUT
+            fields: firstName, lastName, password, email
+            Access: PUBLIC for logged in user
+
+        4. Delete user
+            Usage: delete user
+            URL: /users/:userId
+            Method: DELETE
+            fields: no_fields
+            Access: PUBLIC for logged in user
+
+        5. Get all users
+            Usage: get all users
+            URL: /users
+            Method: GET
+            fields: no_fields
+            Access: Private for admins
+        
+    2. eventsRouters
+        1. Make an event
+            Usage: let admin make an event
+            URL: /events
+            Method: POST
+            fields: title, body, image, created_at
+            Access: Private for admin
+
+        2. Get all events
+            Usage: get all events
+            URL: /events
+            Method: GET
+            fields: no_fields
+            Access: PUBLIC
+        
+        3. Edit event
+            Usage: edit specific event
+            URL: /events/:eventId
+            Method: PUT
+            fields: title, body, updated_at
+            Access: PUBLIC for logged in user has specific post
+
+        4. Delete event
+            Usage: delete specific event
+            URL: /events/:eventId
+            Method: DELETE
+            fields: no_fields
+            Access: PUBLIC for logged in user has specific event
