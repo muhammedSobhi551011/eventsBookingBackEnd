@@ -2,14 +2,14 @@
     1. usersRouter
         1. Registe user
             Usage: Registe a user
-            URL: /Registe
+            URL: /users/registe
             Method: POST
             fields: firstName, lastName, username, email, password, avatar
             Access: PUBLIC
         
         2. Login
             Usage: login
-            URL: /login
+            URL: /users/login
             Method: POST
             fields: username, password
             Access: PUBLIC
@@ -37,27 +37,34 @@
         
     2. eventsRouters
         1. Make an event
-            Usage: let admin make an event
+            Usage: let admin makes an event
             URL: /events
             Method: POST
-            fields: title, body, image, created_at
-            Access: Private for admin
+            fields: title, body, price, type, image, created_at
+            Access: PRIVATE for admin
 
-        2. Get all events
-            Usage: get all events
-            URL: /events
+        2. Get free events
+            Usage: get free events
+            URL: /events/free
             Method: GET
             fields: no_fields
             Access: PUBLIC
         
-        3. Edit event
+        3. Get pro events
+            Usage: get pro events
+            URL: /events/pro
+            Method: GET
+            fields: no_fields
+            Access: PUBLIC
+        
+        4. Edit event
             Usage: edit specific event
             URL: /events/:eventId
             Method: PUT
             fields: title, body, updated_at
-            Access: PUBLIC for logged in user has specific post
+            Access: PRIVATE for admins
 
-        4. Delete event
+        5. Delete event
             Usage: delete specific event
             URL: /events/:eventId
             Method: DELETE
