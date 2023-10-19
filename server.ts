@@ -18,18 +18,18 @@ app.use(cors());
 dotEnv.config({ path: "./.env" });
 
 // conntect to MONGO_DB
-// const mongoLocal: string | undefined = process.env.MONGO_DB_LOCAL;
-// if (mongoLocal) {
-//   mongoose
-//     .connect(mongoLocal)
-//     .then(() => {
-//       console.log("Connected to MongoDB successfully.....");
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       process.exit(1);
-//     });
-// }
+const mongoLocal: string | undefined = process.env.MONGO_DB_LOCAL;
+if (mongoLocal) {
+  mongoose
+    .connect(mongoLocal)
+    .then(() => {
+      console.log("Connected to MongoDB successfully.....");
+    })
+    .catch((err) => {
+      console.log(err);
+      process.exit(1);
+    });
+}
 
 //---------------------------------
 // ROUTERS
