@@ -1,4 +1,4 @@
-import express from "express";
+import express, { urlencoded } from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotEnv from "dotenv";
@@ -7,6 +7,7 @@ import eventsRouter from "./routers/eventsRouter";
 
 // start express application
 const app: express.Application = express();
+app.use(urlencoded({extended: false}));
 
 // configure app to receive form data
 app.use(express.json());

@@ -40,7 +40,7 @@
             Usage: let admin makes an event
             URL: /events
             Method: POST
-            fields: title, body, price, type, image, created_at
+            fields: title, body, price, type, image, created_at, updated_at
             Access: PRIVATE for admin
 
         2. Get free events
