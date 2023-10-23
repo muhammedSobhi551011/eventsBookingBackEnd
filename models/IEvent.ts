@@ -1,12 +1,15 @@
+
 import { Document } from "mongoose";
 
-export interface IEvents extends Document {
-  _id?: string;
+export interface IEvent {
   title: string;
   body: string;
-  price: number;
+  price?: number;
   type: string;
   image: string;
+}
+export interface IEventM extends Document, IEvent {
+  _id?: string;
   created_at?: string;
   updated_at?: string;
 }
