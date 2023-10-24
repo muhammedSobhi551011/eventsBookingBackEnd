@@ -2,6 +2,7 @@
 import { Document } from "mongoose";
 
 export interface IEvent {
+  _id?: string;
   title: string;
   body: string;
   price?: number;

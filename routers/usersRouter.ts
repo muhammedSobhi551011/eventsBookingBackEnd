@@ -1,9 +1,12 @@
 import express from "express";
 import bcryptjs from "bcryptjs";
 import { body, validationResult } from "express-validator";
+import jwt from "jsonwebtoken";
 import User from "../models/user";
+import { authUser } from "../middlewares/authUser";
 
 const usersRouter: express.Router = express.Router();
+let rejectedTokens: Array<string> = new Array();
 
 usersRouter
   .post(
@@ -22,19 +25,41 @@ usersRouter
         res.status(500).json(result);
       } else {
         try {
+          const secretKey: string | undefined = process.env.JWT_SECRET_KEY;
           const { firstName, lastName, email, password, username } = req.body;
           const hashedPassword: string = await bcryptjs.hash(password, 10);
-          const user = await User.create({
+          const initialUser = await User.create({
             firstName: firstName,
             lastName: lastName,
             username: username,
             email: email,
             password: hashedPassword,
+            isAdmin: false,
           });
-          res.status(201).json(user);
+          const naturalUser = {
+            id: initialUser.id,
+            firstName: firstName,
+            lastName: lastName,
+            username: username,
+            email: email,
+            isAdmin: initialUser.isAdmin,
+            eventsBooked: [],
+          };
+          if (secretKey && naturalUser) {
+            const token = jwt.sign(JSON.stringify(naturalUser), secretKey, {
+              expiresIn: "2d",
+            });
+            res.status(201).json({ token: token, user: naturalUser });
+          } else {
+            throw new Error("Error in developement.");
+          }
         } catch (error: any) {
           console.log(error);
-          res.status(500).json(error.message);
+          if (error.code === 11000) {
+            res.status(401).json({ message: "User aleardy exits." });
+          } else {
+            res.status(500).json(error);
+          }
         }
       }
     }
@@ -45,6 +70,7 @@ usersRouter
       body("username").not().isEmpty().withMessage("username is required."),
       body("password").notEmpty().withMessage("password is required."),
     ],
+    authUser,
     async (req: express.Request, res: express.Response) => {
       // Login
 
@@ -53,22 +79,25 @@ usersRouter
         res.status(500).json(result);
       } else {
         try {
-          const { username, password } = req.body;
-          const user: any = await User.findOne().where({ username: username });
-          if (user) {
-            if (await bcryptjs.compare(password, user.password)) {
-              res.status(202).json({ token: user.id });
-            } else {
-              res.status(401).json({ message: "Credentals are incorrect." });
-            }
+          const secretKey: string | undefined = process.env.JWT_SECRET_KEY;
+          const user = req.body.user;
+          if (secretKey && user) {
+            const token = jwt.sign(JSON.stringify(user), secretKey, {
+              expiresIn: "2d",
+            });
+            res.status(201).json({ token: token, user: user });
           }
-        } catch (error: any) {
+        } catch (error) {
           console.log(error);
-          res.status(500).json(error.message);
+          res.status(500).json(error);
         }
       }
     }
   )
+  .get("/logout", (req: express.Request, res: express.Response) => {
+    // TODO: logout functionality
+    res.status(200).json({ message: "Logged out successfully." });
+  })
   .get("/", async (req: express.Request, res: express.Response) => {
     // Get a specific user info
 

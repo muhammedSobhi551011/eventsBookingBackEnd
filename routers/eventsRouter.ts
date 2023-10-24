@@ -1,8 +1,11 @@
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { IEvent, IEventM } from "../models/IEvent";
 import express from "express";
 import { body, validationResult } from "express-validator";
 import Event from "../models/event";
 import { createEventMiddle } from "../middlewares/createEventM";
+import { IUser } from "../models/IUser";
+import User from "../models/user";
 
 const eventsRouter: express.Router = express.Router();
 
@@ -121,6 +124,8 @@ eventsRouter
     }
   )
   .delete("/:eventId", async (req: express.Request, res: express.Response) => {
+    // delete event
+
     try {
       const { eventId } = req.params;
       const event = await Event.findById(eventId).deleteOne();
@@ -132,6 +137,50 @@ eventsRouter
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
+    }
+  })
+  .post("/book", async (req: express.Request, res: express.Response) => {
+    // book an event
+    try {
+      const secretKey: string | undefined = process.env.JWT_SECRET_KEY;
+      const { eventId } = req.query;
+      const token: string | undefined = req
+        .header("Authorization")
+        ?.split(" ")[1];
+      if (eventId && token && secretKey) {
+        const event: IEvent | null = await Event.findById(eventId);
+        const authoredUser: string | JwtPayload = jwt.verify(token, secretKey);
+        if (event && typeof authoredUser === "object") {
+          const user = await User.findById(authoredUser.id)
+          if (user){
+            let eventExist: boolean = false
+            for (const ev of user.eventsBooked){
+              if (ev._id?.toString()===event._id?.toString()){
+                eventExist = true;
+              }
+            }
+            if (eventExist){
+              res.status(400).json({message: "Event aleardy booked."})
+            }else{
+              user.eventsBooked.push(event);
+              const updated = await User.updateOne(
+                { _id: user.id },
+                { $set: { eventsBooked: user.eventsBooked } }
+              );
+              if (updated.modifiedCount > 0) {
+                res.status(201).json({ message: "Event booked." });
+              } else {
+                throw new Error("Book failed.");
+              }
+            }
+          }else {
+            throw new Error("User not found.");
+          }
+        }
+      }
+    } catch (error: any) {
+      console.log(error);
+      res.status(500).json(error.message);
     }
   });
 

@@ -1,5 +1,5 @@
 import { Schema, model} from "mongoose";
-import { IUser } from "./IUser";
+import { IUserM } from "./IUser";
 
 const userSchema: Schema = new Schema(
   {
@@ -11,6 +11,7 @@ const userSchema: Schema = new Schema(
     username: {
       type: String,
       required: true,
+      unique: true,
       lowercase: true,
     },
     email: {
@@ -24,6 +25,10 @@ const userSchema: Schema = new Schema(
       required: true,
     },
     avatar: String,
+    eventsBooked: {
+      type: [],
+      required: false
+    },
     isAdmin: {
       type: Boolean,
       default: false,
@@ -32,6 +37,6 @@ const userSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-const User = model<IUser>("users", userSchema);
+const User = model<IUserM>("users", userSchema);
 
 export default User;
